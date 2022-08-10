@@ -1,3 +1,5 @@
+use std::num::ParseIntError;
+
 use actix_web::{get, guard, web, web::Data, App, HttpResponse, HttpServer, Result};
 use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
@@ -6,14 +8,17 @@ use async_graphql::{
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 
 type StarWarsSchema = Schema<Query, EmptyMutation, EmptySubscription>;
+use async_graphql::*;
 
 struct Query;
 
 #[Object]
 impl Query {
     /// Returns Hello, World
-    async fn hello(&self) -> &str {
-        "Hello, World"
+    async fn hello(&self) -> async_graphql::Result<i32> {
+        "234a"
+            .parse()
+            .map_err(|ref e: ParseIntError| e.extend_with(|_, e| e.set("code", 404)))
     }
 }
 
